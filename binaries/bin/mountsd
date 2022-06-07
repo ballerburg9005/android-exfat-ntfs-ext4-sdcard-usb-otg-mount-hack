@@ -1,0 +1,78 @@
+#!/system/bin/sh
+# context might be u:object_r:fuse:s0 instead of u:object_r:sdcardfs:s0
+
+PATH=$PATH:/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+
+function spamumount() {
+for i in `seq 0 1`; do
+	for j in `seq 0 4`; do
+		umount /sdcard/_$mdir &>/dev/null
+	done
+	umount -f /sdcard/_$mdir &>/dev/null
+	umount -fl /sdcard/_$mdir &>/dev/null
+	umount /dev/block/$mdev &>/dev/null
+	umount -f /dev/block/$mdev &>/dev/null
+	umount -fl /dev/block/$mdev &>/dev/null
+done
+rm /sdcard/_$mdir/mounttest-asdfjhsdgjfg234  &>/dev/null
+if [ "$(ls -a /sdcard/_$mdir 2&>/dev/null | wc -l)" -lt "3" ]; then
+	rmdir /sdcard/_$mdir &>/dev/null
+fi
+}
+
+while true; do
+	# give it cute names otherwise it will try all OTG and SD card devs that exist
+	ARRAY=( "mmcblk1p1:SDCARD" );
+	for sd in `ls /dev/block/sd?? 2&>/dev/null ` `ls /dev/block/mmcblk??? 2&>/dev/null `; do
+		sdn="$(echo "$sd" | grep -osa '[^/]*$')"
+		if ! echo "$sd" | grep -q mmcblk0 && ! echo "${ARRAY[@]}" | grep -q $sdn; then
+			ARRAY=("${ARRAY[@]}" "$sdn:$sdn");
+		fi
+	done
+	for cc in a b c d e f g; do
+		for nn in `seq 1 4`;do
+			mdev=sd$cc$nn
+			mdir=$mdev
+			if ! echo "${ARRAY[@]}" | grep -q $mdev; then
+				spamumount
+			fi
+		done
+	done 
+	echo "Have found the following possible devices: ${ARRAY[@]}"
+	for ap in "${ARRAY[@]}" ; do 
+		mdev="${ap%%:*}"; mdir="${ap#*:}";
+		# if dev exists but it has not been mounted already by normal Android system via vold (detection regex could be prone to error on different Android versions)
+		if [ -b /dev/block/$mdev ] && ! mount | grep "$(ls -l /dev/block/$mdev | sed -nE "s#^[^[:space:]]*[[:space:]][^[:space:]]*[[:space:]][^[:space:]]*[[:space:]][^[:space:]]*[[:space:]]([0-9]*,)[[:space:]]*([0-9]*).*#\1\2#gp")" | grep -q "vold"; then
+			# first try to read test file, then if can't be read (either first mount or stale fs), try to write it (prevents sd card damage)
+			# then if write fails unmount
+			if mount | grep -q "^/dev/block/$mdev" \
+				&& ! cat /sdcard/_$mdir/mounttest-asdfjhsdgjfg234 \
+				&& echo "hack"  2>&1 > /sdcard/_$mdir/mounttest-asdfjhsdgjfg234 | grep -q "Read-only file system" ; then
+				echo "stale mount detected: $mdev $mdir"
+				spamumount
+				sleep 3
+			fi
+			
+			if ! mount | grep -q "^/dev/block/$mdev" ; then
+				echo "attemting brute force mount"
+				spamumount
+				mkdir -p /sdcard/_$mdir
+				mount -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=0000,context=u:object_r:fuse:s0 /dev/block/$mdev /sdcard/_$mdir
+				mount.exfat -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=0000,context=u:object_r:fuse:s0 /dev/block/$mdev /sdcard/_$mdir
+				mount.ntfs -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=0000,context=u:object_r:fuse:s0 /dev/block/$mdev /sdcard/_$mdir
+				mount /dev/block/$mdev /sdcard/_$mdir
+
+				mount -o bind /sdcard/_$mdir /mnt/runtime/write/emulated/0/_$mdir
+				mount -o bind /sdcard/_$mdir /mnt/runtime/read/emulated/0/_$mdir
+				mount -o bind /sdcard/_$mdir /mnt/runtime/default/emulated/0/_$mdir
+			fi
+		else 
+			spamumount
+			sleep 1
+		fi
+	done
+	if [[ "$1" != "infinite" ]]; then
+		break;
+	fi
+	sleep 5
+done
