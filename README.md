@@ -14,7 +14,7 @@ adb shell
 su
 mount -o rw,remount /system 
 cp /sdcard/binaries/bin/* /system/bin/
-cp /sdcard/binaries/lib64/* /system/bin/
+cp /sdcard/binaries/lib64/* /system/lib64/
 chmod 755 /system/bin/fsck.exfat /system/bin/fsck.ntfs /system/bin/mkfs.exfat /system/bin/mkfs.ntfs /system/bin/mount.exfat /system/bin/mount.ntfs /system/bin/mountsd
  mount -o ro,remount /system
  ```
