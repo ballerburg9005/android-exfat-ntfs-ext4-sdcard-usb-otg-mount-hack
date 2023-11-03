@@ -19,7 +19,7 @@ chmod 755 /system/bin/fsck.exfat /system/bin/fsck.ntfs /system/bin/mkfs.exfat /s
  mount -o ro,remount /system
  ```
  
-Now install the apk. All it does is to invoke the script "mountsd", which is a brute force mount script (because Android utils are that unreliable).
+Now install the apk ( AndroidStudioSource/app/release/app-release.apk ). All it does is to invoke the script "mountsd", which is a brute force mount script (because Android utils are that unreliable).
  
 Suppose you wanted to mount an exfat formatted SD-card. It will now be mounted in /sdcard/_SDCARD . You can read this directory from apps immediately as if it was on your internal SD card without having to grant additional storage access.
 
