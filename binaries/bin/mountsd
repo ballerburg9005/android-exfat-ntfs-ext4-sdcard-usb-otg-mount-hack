@@ -14,9 +14,9 @@ for i in `seq 0 1`; do
 	umount -f /dev/block/$mdev &>/dev/null
 	umount -fl /dev/block/$mdev &>/dev/null
 
-	umount /data/media/0/MapsWithMe/230522/
-	umount /storage/emulated/0/MapsWithMe/230522/
-	umount /mnt/runtime/write/emulated/0/MapsWithMe/230522/
+	umount /data/media/0/MapsWithMe/230606/
+	umount /storage/emulated/0/MapsWithMe/230606/
+	umount /mnt/runtime/write/emulated/0/MapsWithMe/230606/
 done
 rm /sdcard/_$mdir/mounttest-asdfjhsdgjfg234  &>/dev/null
 if [ "$(ls -a /sdcard/_$mdir 2&>/dev/null | wc -l)" -lt "3" ]; then
@@ -71,10 +71,11 @@ while true; do
 				mount -o bind /sdcard/_$mdir /mnt/runtime/read/emulated/0/_$mdir
 				mount -o bind /sdcard/_$mdir /mnt/runtime/default/emulated/0/_$mdir
 
+				mkdir -p /sdcard/MapsWithMe/230606
 
-				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /data/media/0/MapsWithMe/230522/
-				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /storage/emulated/0/MapsWithMe/230522/
-				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /mnt/runtime/write/emulated/0/MapsWithMe/230522/
+				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /data/media/0/MapsWithMe/230606/
+				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /storage/emulated/0/MapsWithMe/230606/
+				mount --rbind /sdcard/_SDCARD/Android/data/com.mapswithme.maps.pro/files/MapsWithMe/230314/ /mnt/runtime/write/emulated/0/MapsWithMe/230606/
 
 			fi
 		else 
