@@ -30,6 +30,14 @@ If there is no /sdcard/_sda1 or similar directory to be found, then the script f
 ```
 mount.ntfs -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=0000,context=u:object_r:fuse:s0 /dev/block/mmcblk1p1 /sdcard/_SDCARD
 ```
-*this is really the essence of the whole mountsd script*
+*this is the first important thing that the mountsd script does.*
 
-The second point of failure are the 3 special bind mount directories "/mnt/runtime/write/emulated/0/_$mdir" (see mountsd script) and so forth, which might be in a different location for your Android version. If you can read the directory from adb shell (no root) or from the File Manager app, but other apps show an empty directory, then you need to fix this bind mounting. Try a FAT32 formatted sdcard, and then check the "mount" output and steal the correct directories from there.
+The second point of failure are the 3 special bind mount directories, which might be in a different location for your Android version. 
+
+```
+mount -o bind /sdcard/_SDCARD /mnt/runtime/write/emulated/0/_SDCARD
+mount -o bind /sdcard/_SDCARD /mnt/runtime/read/emulated/0/_SDCARD
+mount -o bind /sdcard/_SDCARD /mnt/runtime/default/emulated/0/_SDCARD
+```
+
+If you can read the directory from adb shell (no root) or from the File Manager app, but other apps show an empty directory, then you need to fix this bind mounting. Try a FAT32 formatted sdcard, and then check the "mount" output and steal the correct directories from there.
