@@ -32,4 +32,4 @@ mount.ntfs -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=00
 ```
 *this is really the essence of the whole mountsd script*
 
-The second point of failure are the special bind mount directories "/mnt/runtime/write/emulated/0/_$mdir" and so forth, which might be in a different location for your Android version. If you can read the directory from adb shell (no root) or from the File Manager app, but other apps show an empty directory, then you need to fix this bind mounting. Try a FAT32 formatted sdcard, and then check the "mount" output and steal the correct directories from there.
+The second point of failure are the 3 special bind mount directories "/mnt/runtime/write/emulated/0/_$mdir" (see mountsd script) and so forth, which might be in a different location for your Android version. If you can read the directory from adb shell (no root) or from the File Manager app, but other apps show an empty directory, then you need to fix this bind mounting. Try a FAT32 formatted sdcard, and then check the "mount" output and steal the correct directories from there.
