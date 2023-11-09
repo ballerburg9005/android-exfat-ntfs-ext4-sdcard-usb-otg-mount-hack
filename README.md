@@ -29,6 +29,7 @@ Suppose you wanted to mount an exfat formatted SD-card. It will now be mounted i
 If there is no /sdcard/_sda1 or similar directory to be found, then the script failed somehow and you have to rewrite it or make your own script from scratch. Try to execute the long mount command that contains the line "context=u:object_r:fuse:s0" directly. This option is required for SELinux btw. Be sure to pick the right "mount.XXXX" for your filesystem. Like so:
 
 ```
+mkdir /sdcard/_SDCARD
 mount.ntfs -o rw,dirsync,nosuid,nodev,noexec,relatime,uid=1023,gid=1023,umask=0000,context=u:object_r:fuse:s0 /dev/block/mmcblk1p1 /sdcard/_SDCARD
 ```
 *Mounting the filesystem like this is the first important thing that the mountsd script does.*
